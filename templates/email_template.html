@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ subject_line }}</title>
+</head>
+<body style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
+
+    <!-- Greeting -->
+    <p style="margin-bottom: 15px;">Hi {{ first_name }},</p>
+
+    <!-- Opening -->
+    <p style="margin-bottom: 15px;">Please see the data below for {{ business_name }}.</p>
+
+    <!-- Personalized Text -->
+    {% if personalized_text %}
+    <p style="margin-bottom: 15px; font-style: italic; color: #555;">
+      {{ personalized_text }}
+    </p>
+    {% endif %}
+
+    <!-- Standard Paragraph -->
+    <p style="margin-bottom: 20px;">
+      {{ standard_paragraph }}
+    </p>
+
+    <!-- KPI Table -->
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+      <thead>
+        <tr style="background-color: #f4f4f4;">
+          <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold;">Metric</th>
+          <th style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold;">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for kpi_name, kpi_value in kpis.items() %}
+        <tr {% if loop.index is odd %}style="background-color: #f9f9f9;"{% endif %}>
+          <td style="border: 1px solid #ddd; padding: 10px;">{{ kpi_name }}</td>
+          <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">{{ kpi_value }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Standard Closing Paragraph -->
+    <p style="margin-bottom: 20px;">
+      {{ closing_paragraph }}
+    </p>
+
+    <!-- Signature -->
+    <p style="margin-bottom: 5px;">Best regards,</p>
+    <p style="margin-bottom: 5px; font-weight: bold;">{{ agency_name }}</p>
+    <p style="margin-bottom: 0; font-size: 13px; color: #666;">
+      {{ agency_email }} | {{ agency_phone }}{% if agency_website %} | {{ agency_website }}{% endif %}
+    </p>
+
+  </div>
+</body>
+</html>

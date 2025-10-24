@@ -1,0 +1,25 @@
+# OAuth Credentials (NEVER COMMIT)
+credentials.json
+token.pickle
+token.json
+.env
+
+# Data Files
+data/*.csv
+data/pdfs/*.pdf
+data/archive/*.pdf
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# Logs
+logs/*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp

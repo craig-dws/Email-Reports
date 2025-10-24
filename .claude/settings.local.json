@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp add:*)",
+      "Bash(npx:*)",
+      "Bash(where python)",
+      "Bash(py --version)",
+      "Bash(py:*)",
+      "Bash(mkdir:*)",
+      "Bash(venvScriptspip install -r requirements.txt)",
+      "Bash(./venv/Scripts/pip install:*)",
+      "Bash(./venv/Scripts/pip list)",
+      "Bash(./venv/Scripts/python -m pip install --upgrade pip)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
