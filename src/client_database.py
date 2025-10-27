@@ -1,11 +1,14 @@
 """
 Client Database Module.
 Manages client data and performs fuzzy matching for business names.
+
+This module handles loading client data from the CSV file and matching
+business names extracted from PDFs to client records using fuzzy string matching.
 """
 
 import csv
 from pathlib import Path
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Tuple
 from rapidfuzz import fuzz, process
 from .logger import get_logger
 
@@ -43,14 +46,38 @@ class ClientDatabase:
         try:
             with open(self.csv_path, 'r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
-                for row in reader:
-                    # Only load active clients
-                    if row.get('Active', 'TRUE').upper() == 'TRUE':
-                        self.clients.append(row)
-                        self.business_names.append(row['BusinessName'])
 
-            self.logger.info(f"Loaded {len(self.clients)} active clients from database")
+                # Log the headers we found
+                self.logger.debug(f"CSV Headers: {reader.fieldnames}")
 
+                for row_num, row in enumerate(reader, start=2):
+                    # Skip empty rows
+                    client_name = row.get('Client-Name', '').strip()
+                    if not client_name:
+                        self.logger.debug(f"Skipping empty row {row_num}")
+                        continue
+
+                    # Validate required fields
+                    contact_email = row.get('Contact-Email', '').strip()
+                    contact_name = row.get('Contact-Name', '').strip()
+
+                    if not contact_email:
+                        self.logger.warning(f"Row {row_num}: Missing email for {client_name}")
+
+                    if not contact_name:
+                        self.logger.warning(f"Row {row_num}: Missing contact name for {client_name}")
+
+                    # Store the client (we keep all clients, not filtering by Active status
+                    # since the actual CSV doesn't have an Active column)
+                    self.clients.append(row)
+                    self.business_names.append(client_name)
+                    self.logger.debug(f"Loaded client: {client_name}")
+
+            self.logger.info(f"Loaded {len(self.clients)} clients from database")
+
+        except KeyError as e:
+            self.logger.error(f"Missing expected column in CSV: {e}")
+            raise
         except Exception as e:
             self.logger.error(f"Failed to load client database: {str(e)}")
             raise
@@ -68,19 +95,22 @@ class ClientDatabase:
         if not business_name:
             return None
 
+        business_name = business_name.strip()
+
         # Try exact match first (case-insensitive)
         for client in self.clients:
-            if client['BusinessName'].lower() == business_name.lower():
+            client_name = client.get('Client-Name', '').strip()
+            if client_name.lower() == business_name.lower():
                 self.logger.info(
-                    f"Exact match found: '{business_name}' -> {client['BusinessName']}"
+                    f"Exact match found: '{business_name}' -> {client_name}"
                 )
                 return client
 
-        # Try fuzzy matching
+        # Try fuzzy matching with token_sort_ratio (better for word order variations)
         result = process.extractOne(
             business_name,
             self.business_names,
-            scorer=fuzz.ratio,
+            scorer=fuzz.token_sort_ratio,
             score_cutoff=self.fuzzy_threshold
         )
 
@@ -88,137 +118,166 @@ class ClientDatabase:
             matched_name, score, _ = result
             # Find the client with this business name
             for client in self.clients:
-                if client['BusinessName'] == matched_name:
+                if client.get('Client-Name', '').strip() == matched_name:
                     self.logger.info(
                         f"Fuzzy match found: '{business_name}' -> "
-                        f"'{matched_name}' (score: {score})"
+                        f"'{matched_name}' (score: {score:.1f})"
                     )
                     return client
 
         self.logger.warning(f"No match found for business name: '{business_name}'")
         return None
 
-    def get_client_by_id(self, client_id: str) -> Optional[Dict]:
+    def find_all_matches(
+        self,
+        business_name: str,
+        min_score: Optional[int] = None
+    ) -> List[Tuple[Dict, int]]:
         """
-        Get client by ID.
+        Find all possible matches for a business name above the threshold.
+
+        Useful for detecting multiple potential matches (ambiguous cases).
 
         Args:
-            client_id: Client ID to search for
+            business_name: Business name to match
+            min_score: Minimum score threshold (defaults to fuzzy_threshold)
 
         Returns:
-            Client dictionary if found, None otherwise
+            List of (client_dict, score) tuples, sorted by score descending
         """
+        if not business_name or not business_name.strip():
+            return []
+
+        business_name = business_name.strip()
+        min_score = min_score or self.fuzzy_threshold
+
+        if not self.clients:
+            self.logger.warning("No clients loaded in database")
+            return []
+
+        # Get all matches above threshold
+        results = process.extract(
+            business_name,
+            self.business_names,
+            scorer=fuzz.token_sort_ratio,
+            score_cutoff=min_score,
+            limit=None  # Get all matches above threshold
+        )
+
+        # Convert to client dicts with scores
+        matches = []
+        for matched_name, score, _ in results:
+            for client in self.clients:
+                if client.get('Client-Name', '').strip() == matched_name:
+                    matches.append((client, int(score)))
+                    break
+
+        # Sort by score descending
+        matches.sort(key=lambda x: x[1], reverse=True)
+
+        self.logger.info(f"Found {len(matches)} matches for '{business_name}'")
+        return matches
+
+    def get_service_type(self, client: Dict, report_type: str) -> str:
+        """
+        Determine service type from report type.
+
+        Args:
+            client: Client dictionary
+            report_type: 'seo' or 'google_ads'
+
+        Returns:
+            'SEO' or 'SEM'
+        """
+        if report_type.lower() == 'google_ads':
+            return 'SEM'
+        else:
+            return 'SEO'
+
+    def get_personalized_intro(self, client: Dict, report_type: str) -> str:
+        """
+        Get the personalized introduction text for the client based on report type.
+
+        Args:
+            client: Client dictionary
+            report_type: 'seo' or 'google_ads'
+
+        Returns:
+            Personalized introduction HTML text
+        """
+        if report_type.lower() == 'google_ads':
+            intro = client.get('Google-Ads-Introduction', '').strip()
+        else:
+            intro = client.get('SEO-Introduction', '').strip()
+
+        return intro
+
+    def validate_database(self) -> Dict[str, any]:
+        """
+        Validate the database for common issues.
+
+        Returns:
+            Dictionary with validation results
+        """
+        issues = {
+            'duplicate_names': [],
+            'missing_emails': [],
+            'missing_contact_names': [],
+            'missing_seo_intro': [],
+            'missing_google_ads_intro': [],
+            'total_clients': len(self.clients)
+        }
+
+        # Check for duplicate client names
+        name_counts = {}
         for client in self.clients:
-            if client['ClientID'] == str(client_id):
-                return client
-        return None
+            name_lower = client.get('Client-Name', '').strip().lower()
+            if name_lower:
+                name_counts[name_lower] = name_counts.get(name_lower, 0) + 1
+
+        issues['duplicate_names'] = [
+            name for name, count in name_counts.items() if count > 1
+        ]
+
+        # Check for missing data
+        for client in self.clients:
+            client_name = client.get('Client-Name', '').strip()
+
+            if not client.get('Contact-Email', '').strip():
+                issues['missing_emails'].append(client_name)
+
+            if not client.get('Contact-Name', '').strip():
+                issues['missing_contact_names'].append(client_name)
+
+            if not client.get('SEO-Introduction', '').strip():
+                issues['missing_seo_intro'].append(client_name)
+
+            if not client.get('Google-Ads-Introduction', '').strip():
+                issues['missing_google_ads_intro'].append(client_name)
+
+        # Log validation results
+        if any([
+            issues['duplicate_names'],
+            issues['missing_emails'],
+            issues['missing_contact_names']
+        ]):
+            self.logger.warning("Database validation found issues:")
+            if issues['duplicate_names']:
+                self.logger.warning(f"  Duplicate names: {issues['duplicate_names']}")
+            if issues['missing_emails']:
+                self.logger.warning(f"  Missing emails: {len(issues['missing_emails'])} clients")
+            if issues['missing_contact_names']:
+                self.logger.warning(f"  Missing contact names: {len(issues['missing_contact_names'])} clients")
+        else:
+            self.logger.info("Database validation passed: No critical issues found")
+
+        return issues
 
     def get_all_clients(self) -> List[Dict]:
         """
-        Get all active clients.
+        Get all clients.
 
         Returns:
             List of client dictionaries
         """
         return self.clients.copy()
-
-    def add_client(self, client_data: Dict) -> bool:
-        """
-        Add a new client to the database.
-
-        Args:
-            client_data: Dictionary containing client information
-
-        Returns:
-            True if successful, False otherwise
-        """
-        try:
-            # Generate new ID
-            max_id = max([int(c['ClientID']) for c in self.clients], default=0)
-            client_data['ClientID'] = str(max_id + 1)
-
-            # Add timestamps
-            from datetime import datetime
-            today = datetime.now().strftime('%Y-%m-%d')
-            client_data.setdefault('CreatedDate', today)
-            client_data.setdefault('LastModifiedDate', today)
-            client_data.setdefault('Active', 'TRUE')
-
-            # Append to CSV
-            with open(self.csv_path, 'a', newline='', encoding='utf-8') as f:
-                fieldnames = [
-                    'ClientID', 'FirstName', 'BusinessName', 'Email',
-                    'ServiceType', 'PersonalizedText', 'Active',
-                    'CreatedDate', 'LastModifiedDate'
-                ]
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writerow(client_data)
-
-            # Reload database
-            self.load_clients()
-            self.logger.info(f"Added new client: {client_data['BusinessName']}")
-            return True
-
-        except Exception as e:
-            self.logger.error(f"Failed to add client: {str(e)}")
-            return False
-
-    def update_client(self, client_id: str, updates: Dict) -> bool:
-        """
-        Update client information.
-
-        Args:
-            client_id: Client ID to update
-            updates: Dictionary of fields to update
-
-        Returns:
-            True if successful, False otherwise
-        """
-        try:
-            # Read all clients
-            all_clients = []
-            with open(self.csv_path, 'r', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
-                fieldnames = reader.fieldnames
-                all_clients = list(reader)
-
-            # Update the client
-            from datetime import datetime
-            updated = False
-            for client in all_clients:
-                if client['ClientID'] == str(client_id):
-                    client.update(updates)
-                    client['LastModifiedDate'] = datetime.now().strftime('%Y-%m-%d')
-                    updated = True
-                    break
-
-            if not updated:
-                self.logger.warning(f"Client ID {client_id} not found for update")
-                return False
-
-            # Write back to CSV
-            with open(self.csv_path, 'w', newline='', encoding='utf-8') as f:
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
-                writer.writerows(all_clients)
-
-            # Reload database
-            self.load_clients()
-            self.logger.info(f"Updated client ID {client_id}")
-            return True
-
-        except Exception as e:
-            self.logger.error(f"Failed to update client: {str(e)}")
-            return False
-
-    def deactivate_client(self, client_id: str) -> bool:
-        """
-        Deactivate a client (soft delete).
-
-        Args:
-            client_id: Client ID to deactivate
-
-        Returns:
-            True if successful, False otherwise
-        """
-        return self.update_client(client_id, {'Active': 'FALSE'})
