@@ -4,10 +4,12 @@ Creates HTML emails from templates and client data.
 """
 
 import os
+import re
 from pathlib import Path
 from typing import Dict
 from jinja2 import Environment, FileSystemLoader, Template
 from premailer import transform
+from markupsafe import Markup
 from .logger import get_logger
 
 logger = get_logger('EmailGenerator')
@@ -28,11 +30,14 @@ class EmailGenerator:
         self.config = config
         self.logger = logger
 
-        # Load Jinja2 template
+        # Load Jinja2 template with autoescape enabled
         template_dir = self.template_path.parent
         template_file = self.template_path.name
 
-        env = Environment(loader=FileSystemLoader(str(template_dir)))
+        env = Environment(
+            loader=FileSystemLoader(str(template_dir)),
+            autoescape=True  # Enable autoescaping for security
+        )
         self.template = env.get_template(template_file)
 
         self.logger.info(f"Email template loaded from: {template_path}")
@@ -46,40 +51,59 @@ class EmailGenerator:
         Generate personalized email for a client.
 
         Args:
-            client_data: Client information from database
+            client_data: Client information from database (with CSV field names)
             extracted_data: Extracted data from PDF (business name, KPIs, etc.)
 
         Returns:
             Dictionary with 'subject', 'html_body', 'text_body' keys
         """
         try:
-            # Determine service type and standard paragraph
-            service_type = client_data['ServiceType'].upper()
-            if service_type == 'SEO':
-                standard_paragraph = self.config.get(
-                    'STANDARD_SEO_PARAGRAPH',
-                    'Your keyword rankings continue to improve.'
-                )
-                report_type = 'SEO Report'
-            else:  # SEM
+            # Get client info using CSV field names
+            client_name = client_data.get('Client-Name', '').strip()
+            contact_name = client_data.get('Contact-Name', '').strip()
+            contact_email = client_data.get('Contact-Email', '').strip()
+
+            # Extract first name from Contact-Name (may contain multiple names separated by &)
+            first_name = self._extract_first_name(contact_name)
+
+            # Determine report type from extracted data
+            report_type = extracted_data.get('report_type', 'SEO')
+
+            # Get appropriate personalized intro and standard paragraph
+            if report_type == 'Google Ads':
+                personalized_intro = client_data.get('Google-Ads-Introduction', '').strip()
                 standard_paragraph = self.config.get(
                     'STANDARD_SEM_PARAGRAPH',
-                    'Your Google Ads campaigns continue to drive quality traffic.'
+                    'Your Google Ads campaigns continue to drive quality traffic and conversions.'
                 )
-                report_type = 'Google Ads Report'
+                service_label = 'Google Ads Report'
+            else:  # SEO
+                personalized_intro = client_data.get('SEO-Introduction', '').strip()
+                standard_paragraph = self.config.get(
+                    'STANDARD_SEO_PARAGRAPH',
+                    'Your keyword rankings continue to improve across target search terms.'
+                )
+                service_label = 'SEO Report'
 
             # Generate subject line
             month_year = extracted_data.get('report_month', 'Monthly')
-            subject = f"Your {month_year} {report_type}"
+            subject = f"Your {month_year} {service_label}"
+
+            # Format KPIs for display
+            formatted_kpis = self._format_kpis(
+                extracted_data.get('kpis', {}),
+                report_type
+            )
 
             # Prepare template context
             context = {
                 'subject_line': subject,
-                'first_name': client_data['FirstName'],
-                'business_name': client_data['BusinessName'],
-                'personalized_text': client_data.get('PersonalizedText', ''),
+                'first_name': first_name,
+                'business_name': client_name,
+                # Mark personalized_intro as safe HTML (it contains <p> tags from CSV)
+                'personalized_text': Markup(personalized_intro) if personalized_intro else '',
                 'standard_paragraph': standard_paragraph,
-                'kpis': extracted_data.get('kpis', {}),
+                'kpis': formatted_kpis,
                 'closing_paragraph': self.config.get(
                     'STANDARD_CLOSING_PARAGRAPH',
                     'Please review the attached PDF for your complete monthly report.'
@@ -97,34 +121,130 @@ class EmailGenerator:
             html_body = transform(html_body)
 
             # Generate plain text version (simple fallback)
-            text_body = self._generate_text_body(context)
+            text_body = self._generate_text_body(context, formatted_kpis)
 
             self.logger.info(
-                f"Generated email for {client_data['BusinessName']} - "
-                f"Subject: {subject}"
+                f"Generated email for {client_name} - Subject: {subject}"
             )
 
             return {
                 'subject': subject,
                 'html_body': html_body,
                 'text_body': text_body,
-                'recipient_email': client_data['Email'],
-                'recipient_name': client_data['FirstName']
+                'recipient_email': contact_email,
+                'recipient_name': first_name,
+                'business_name': client_name
             }
 
         except Exception as e:
+            business_name = client_data.get('Client-Name', 'Unknown')
             self.logger.error(
-                f"Failed to generate email for {client_data.get('BusinessName', 'Unknown')}: "
-                f"{str(e)}"
+                f"Failed to generate email for {business_name}: {str(e)}"
             )
             raise
 
-    def _generate_text_body(self, context: Dict) -> str:
+    def _extract_first_name(self, contact_name: str) -> str:
+        """
+        Extract first name from contact name field.
+        Handles cases like "John & Mary" or "John" or "John, Mary, Bob".
+
+        Args:
+            contact_name: Contact name string
+
+        Returns:
+            First name only
+        """
+        if not contact_name:
+            return ""
+
+        # Remove extra whitespace
+        contact_name = contact_name.strip()
+
+        # Split by & or comma
+        names = re.split(r'[&,]', contact_name)
+
+        if names:
+            # Get first name and clean it
+            first_name = names[0].strip()
+            return first_name
+
+        return contact_name
+
+    def _format_kpis(self, kpis: Dict, report_type: str) -> Dict[str, str]:
+        """
+        Format KPI values for display in email.
+
+        Args:
+            kpis: Dictionary of KPI name -> value (may be dict with 'value' key or string)
+            report_type: 'SEO' or 'Google Ads'
+
+        Returns:
+            Dictionary of formatted KPI name -> formatted value
+        """
+        formatted = {}
+
+        for kpi_name, kpi_data in kpis.items():
+            # Extract value (may be string or dict with 'value' key)
+            if isinstance(kpi_data, dict):
+                value = kpi_data.get('value', '')
+            else:
+                value = kpi_data
+
+            # Format based on KPI type
+            formatted_value = self._format_kpi_value(kpi_name, value)
+            formatted[kpi_name] = formatted_value
+
+        return formatted
+
+    def _format_kpi_value(self, kpi_name: str, value: str) -> str:
+        """
+        Format a single KPI value based on its type.
+
+        Args:
+            kpi_name: Name of the KPI
+            value: Raw value string
+
+        Returns:
+            Formatted value string
+        """
+        if not value or value == 'None':
+            return 'N/A'
+
+        value = str(value).strip()
+
+        # Already formatted values (with currency, percentage, time format)
+        if any(char in value for char in ['$', '%', ':']):
+            return value
+
+        # For numeric values, add thousands separators if not already present
+        # Check if it's a plain number
+        if re.match(r'^\d+$', value):
+            try:
+                num = int(value)
+                return f"{num:,}"
+            except ValueError:
+                return value
+
+        # Decimal numbers (without percentage)
+        if re.match(r'^\d+\.\d+$', value):
+            # Could be engagement rate, bounce rate (should be %)
+            # Or could be cost (should be $)
+            if 'rate' in kpi_name.lower():
+                return f"{value}%"
+            elif 'cpc' in kpi_name.lower() or 'cost' in kpi_name.lower():
+                return f"${value}"
+            else:
+                return value
+
+        return value
+
+    def _generate_text_body(self, context: Dict, formatted_kpis: Dict) -> str:
         """
         Generate plain text version of email.
 
         Args:
             context: Template context
+            formatted_kpis: Formatted KPI dictionary
 
         Returns:
             Plain text email body
@@ -132,14 +252,16 @@ class EmailGenerator:
         text = f"Hi {context['first_name']},\n\n"
         text += f"Please see the data below for {context['business_name']}.\n\n"
 
+        # Convert HTML personalized text to plain text
         if context.get('personalized_text'):
-            text += f"{context['personalized_text']}\n\n"
+            personalized_plain = self._html_to_text(str(context['personalized_text']))
+            text += f"{personalized_plain}\n\n"
 
         text += f"{context['standard_paragraph']}\n\n"
 
         text += "KEY METRICS:\n"
         text += "-" * 40 + "\n"
-        for kpi_name, kpi_value in context['kpis'].items():
+        for kpi_name, kpi_value in formatted_kpis.items():
             text += f"{kpi_name}: {kpi_value}\n"
         text += "-" * 40 + "\n\n"
 
@@ -151,6 +273,28 @@ class EmailGenerator:
         if context.get('agency_website'):
             text += f"{context['agency_website']}\n"
 
+        return text
+
+    def _html_to_text(self, html: str) -> str:
+        """
+        Convert HTML to plain text by removing tags.
+
+        Args:
+            html: HTML string
+
+        Returns:
+            Plain text string
+        """
+        # Remove HTML tags
+        text = re.sub(r'<[^>]+>', '', html)
+        # Decode HTML entities
+        text = text.replace('&nbsp;', ' ')
+        text = text.replace('&amp;', '&')
+        text = text.replace('&lt;', '<')
+        text = text.replace('&gt;', '>')
+        # Clean up whitespace
+        text = re.sub(r'\n\s*\n', '\n\n', text)
+        text = text.strip()
         return text
 
     def preview_email(self, email_data: Dict) -> str:

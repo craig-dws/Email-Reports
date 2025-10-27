@@ -169,7 +169,11 @@ class PDFExtractor:
             Business name or None
         """
         # Try multiple patterns for business name extraction
+        # Pattern 1: "SEO Report for The George Centre Jul 1, 2025 - Sep 30, 2025"
+        # Pattern 2: "Report for Client Name"
+        # Pattern 3: "Google Ads Report for Client Name"
         patterns = [
+            r'(?:SEO Report for|Google Ads Report for|Report for|Client:|Business:)\s+([A-Za-z0-9\s&,.\'-]+?)(?:\s+[A-Z][a-z]{2}\s+\d|\n|$)',
             r'(?:Report for|Client:|Business:)\s*([A-Z][A-Za-z0-9\s&,.\'-]+?)(?:\n|$)',
             r'^([A-Z][A-Za-z0-9\s&,.\'-]{3,}?)(?:\s*-\s*(?:SEO|SEM|Google Ads)|\n)',
         ]
@@ -201,10 +205,13 @@ class PDFExtractor:
             text: PDF text content
 
         Returns:
-            Tuple of (full_date, month_year) e.g., ("2025-01-15", "January 2025")
+            Tuple of (full_date, month_year) e.g., ("2025-01-15", "September 2024")
         """
         # Date patterns
+        # Pattern for date range: "Jul 1, 2025 - Sep 30, 2025" (use end date)
+        # Pattern for single date: "January 2025" or "January 15, 2025"
         patterns = [
+            r'(\w{3}\s+\d{1,2},\s+\d{4})\s*-\s*(\w{3}\s+\d{1,2},\s+\d{4})',  # Date range, capture end date
             r'(?:Date|Period|Month):\s*(\w+\s+\d{4})',  # "January 2025"
             r'(\w+\s+\d{1,2},?\s+\d{4})',  # "January 15, 2025"
             r'(\d{1,2}/\d{1,2}/\d{4})',    # "01/15/2025"
@@ -214,12 +221,24 @@ class PDFExtractor:
         for pattern in patterns:
             match = re.search(pattern, text, re.IGNORECASE)
             if match:
-                date_str = match.group(1).strip()
+                # For date range pattern, use the end date (group 2)
+                if match.lastindex == 2:
+                    date_str = match.group(2).strip()
+                else:
+                    date_str = match.group(1).strip()
 
                 # Try to parse and format
                 try:
                     # Try different date formats
-                    for fmt in ['%B %Y', '%B %d, %Y', '%m/%d/%Y', '%Y-%m-%d']:
+                    date_formats = [
+                        '%b %d, %Y',   # "Sep 30, 2025"
+                        '%B %Y',       # "September 2025"
+                        '%B %d, %Y',   # "September 30, 2025"
+                        '%m/%d/%Y',    # "09/30/2025"
+                        '%Y-%m-%d'     # "2025-09-30"
+                    ]
+
+                    for fmt in date_formats:
                         try:
                             dt = datetime.strptime(date_str, fmt)
                             full_date = dt.strftime('%Y-%m-%d')

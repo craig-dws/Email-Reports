@@ -1,19 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./venv/Scripts/python.exe test_pdf_extraction.py)",
-      "Bash(./venv/Scripts/python.exe test_kpi_extraction.py:*)",
-      "Bash(./venv/Scripts/python.exe:*)",
-      "Bash(python test:*)",
-      "Bash(python3:*)",
-      "Bash(where python)",
-      "Bash(py --version)",
-      "Bash(py test_client_database.py)",
-      "Bash(py -m pip install:*)",
-      "Bash(py:*)",
-      "Bash(python tests/test_gmail_reader.py)",
-      "Bash(venv/Scripts/python.exe -m unittest:*)",
-      "Bash(mkdir:*)"
+      "Bash(venv/Scripts/python.exe -c \"import pdfplumber; pdf = pdfplumber.open(''tgc_seo.pdf''); text = pdf.pages[0].extract_text(); open(''pdf_text_seo.txt'', ''w'', encoding=''utf-8'').write(text[:1000])\")"
     ],
     "deny": [],
     "ask": []
