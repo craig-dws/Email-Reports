@@ -1,0 +1,390 @@
+
+================================================================================
+SEO REPORT: tgc_seo.pdf
+================================================================================
+
+--- FULL TEXT (first 3000 chars) ---
+SEO Report for The George Centre Jul 1, 2025 - Sep 30, 2025 
+Overview
+Sessions Conversions Engagement & Bounce Rate
+Sessions Active users New users Key events Engagement rate Bounce rate Average session duration
+22,837 14,350 13,703 1,087 63.31% 36.69% 00:03:29
+11.8% 14.8% 15.3% 0.6% -0.1% 0.2% 9.4%
+Sessions Key events
+9K 450
+8K
+400
+7K
+350
+6K
+300
+5K
+4K 250
+Oct 2024 Nov 2024 Dec 2024 Jan 2025 Feb 2025 Mar 2025 Apr 2025 May 2025 Jun 2025 Jul 2025 Aug 2025 Sep 2025
+snoisseS stneve
+yeK
+Month to Month
+discoverweb.solutions
+
+--- TABLES FOUND: 4 ---
+
+--- TABLE 1 ---
+['', '', 'SEO Report for The George Centre Jul 1, 2025 - Sep 30, 2025 \ue5c5']
+['', '', 'Overview']
+['', '', 'Sessions Conversions Engagement & Bounce Rate\nSessions Active users New users Key events Engagement rate Bounce rate Average session duration\n22,837 14,350 13,703 1,087 63.31% 36.69% 00:03:29\n11.8% 14.8% 15.3% 0.6% -0.1% 0.2% 9.4%\nMonth to Month\nSessions Key events\n9K 450\n8K\n400\n7K snoisseS stneve\n350\nyeK\n6K\n300\n5K\n4K 250\nOct 2024 Nov 2024 Dec 2024 Jan 2025 Feb 2025 Mar 2025 Apr 2025 May 2025 Jun 2025 Jul 2025 Aug 2025 Sep 2025']
+['', '', 'discoverweb.solutions']
+
+--- TABLE 2 ---
+['Engagement & Bounce Rate\nEngagement rate Bounce rate Average session duration\n63.31% 36.69% 00:03:29\n-0.1% 0.2% 9.4%', None]
+[None, 'Engagement & Bounce Rate\nEngagement rate Bounce rate Average session duration\n63.31% 36.69% 00:03:29\n-0.1% 0.2% 9.4%']
+
+--- TABLE 3 ---
+['Sessions Key events\n9K 450\n8K\n400\n7K snoisseS stneve\n350\nyeK\n6K\n300\n5K\n4K 250\nOct 2024 Nov 2024 Dec 2024 Jan 2025 Feb 2025 Mar 2025 Apr 2025 May 2025 Jun 2025 Jul 2025 Aug 2025 Sep 2025', None]
+[None, 'Sessions Key events\n9K 450\n8K\n400\n7K snoisseS stneve\n350\nyeK\n6K\n300\n5K\n4K 250\nOct 2024 Nov 2024 Dec 2024 Jan 2025 Feb 2025 Mar 2025 Apr 2025 May 2025 Jun 2025 Jul 2025 Aug 2025 Sep 2025']
+
+--- TABLE 4 ---
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', None, None]
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', None, None]
+[None, None, None, None, None, None, None, None, None, None, '', '', None, None, None, None, None, None, None, None, '', None, None]
+[None, None, None, None, None, None, None, None, None, None, '', '', None, None, None, None, None, None, None, None, '', '', '']
+[None, None, None, None, None, None, None, None, '', '', '', '', None, None, '', '', None, None, '', '', '', '', '']
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', None, None, None, None, None, None]
+[None, None, None, None, None, None, None, None, None, None, None, None, '', None, None, None, None, None, None, None, None, None, None]
+[None, None, None, None, None, None, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
+[None, None, '', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
+['', '', '', '', None, None, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['', '', '', '', None, None, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['', '', '', '', None, None, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+
+
+================================================================================
+GOOGLE ADS REPORT: tgc_google_ads.pdf
+================================================================================
+
+--- FULL TEXT (first 3000 chars) ---
+Clicks Conversions
+25 2
+20
+1.5
+15
+1
+10
+0.5
+5
+0 0
+Sep
+1,
+2
+S
+0
+e
+2
+p
+5
+2,
+2
+S
+0
+e
+2
+p
+5
+3,
+2
+S
+0
+e
+2
+p
+5
+4,
+2
+S
+0
+e
+2
+p
+5
+5,
+2
+S
+0
+e
+2
+p
+5
+6,
+2
+S
+0
+e
+2
+p
+5
+7,
+2
+S
+0
+e
+2
+p
+5
+8,
+2
+S
+0
+e
+2
+p
+5
+9,
+S
+2
+e
+0
+p
+2
+1
+5
+0,
+S
+2
+e
+0
+p
+2
+1
+5
+1,
+S
+2
+e
+0
+p
+2
+1
+5
+2,
+S
+2
+e
+0
+p
+2
+1
+5
+3,
+S
+2
+e
+0
+p
+2
+1
+5
+4,
+S
+2
+e
+0
+p
+2
+1
+5
+5,
+S
+2
+e
+0
+p
+2
+1
+5
+6,
+S
+2
+e
+0
+p
+2
+1
+5
+7,
+S
+2
+e
+0
+p
+2
+1
+5
+8,
+S
+2
+e
+0
+p
+2
+1
+5
+9,
+S
+2
+e
+0
+p
+2
+2
+5
+0,
+S
+2
+e
+0
+p
+2
+2
+5
+1,
+S
+2
+e
+0
+p
+2
+2
+5
+2,
+S
+2
+e
+0
+p
+2
+2
+5
+3,
+S
+2
+e
+0
+p
+2
+2
+5
+4,
+S
+2
+e
+0
+p
+2
+2
+5
+5,
+S
+2
+e
+0
+p
+2
+2
+5
+6,
+S
+2
+e
+0
+p
+2
+2
+5
+7,
+S
+2
+e
+0
+p
+2
+2
+5
+8,
+S
+2
+e
+0
+p
+2
+2
+5
+9,
+S
+2
+e
+0
+p
+2
+3
+5
+0,
+2025
+skcilC
+snoisrevnoC
+Google Ads Report for The George Centre Sep 1, 2025 - Sep 30, 2025 
+Overview
+Click Through Rate & Impressions Conversions Cost & Cost Per Click
+Clicks Impressions CTR Conversions Conv. rate Avg. CPC Cost
+332 6,484 5.12% 11 3.31% $2.96 $984
+157.4% 178.6% -7.6% N/A N/A -62.1% -2.5%
+Clicks vs Conversions
+Campaign Details
+Campaign Clicks ▼ Impressions CTR Avg. CPC Conversions Conv. rate Cost
+HCF No Gap Search Campai… 332 6,484 5.12% $2.96 11 3.31% $984
+Campaign #1 0 0 0% $0 0 0% $0
+discoverweb.solutions
+
+--- TABLES FOUND: 7 ---
+
+--- TABLE 1 ---
+['', '', 'Google Ads Report for The George Centre Sep 1, 2025 - Sep 30, 2025 \ue5c5']
+['', '', 'Overview']
+['', '', 'Click Through Rate & Impressions Conversions Cost & Cost Per Click\nClicks Impressions CTR Conversions Conv. rate Avg. CPC Cost\n332 6,484 5.12% 11 3.31% $2.96 $984\n157.4% 178.6% -7.6% N/A N/A -62.1% -2.5%\nClicks vs Conversions\nClicks Conversions\n25 2\n20\n1.5\nsnoisrevnoC\n15\nskcilC\n1\n10\n0.5\n5\n0 0\n2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2025\n1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0,\nSep S e p S e p S e p S e p S e p S e p S e p S e p S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 3\nCampaign Details\nCampaign Clicks ▼ Impressions CTR Avg. CPC Conversions Conv. rate Cost\nHCF No Gap Search Campai… 332 6,484 5.12% $2.96 11 3.31% $984\nCampaign #1 0 0 0% $0 0 0% $0']
+['', '', 'discoverweb.solutions']
+
+--- TABLE 2 ---
+['Click Through Rate & Impressions\nClicks Impressions CTR\n332 6,484 5.12%\n157.4% 178.6% -7.6%', '']
+
+--- TABLE 3 ---
+['', 'Conversions\nConversions Conv. rate\n11 3.31%\nN/A N/A', '']
+
+--- TABLE 4 ---
+['', 'Cost & Cost Per Click\nAvg. CPC Cost\n$2.96 $984\n-62.1% -2.5%']
+
+--- TABLE 5 ---
+['']
+['Clicks Conversions\n25 2\n20\n1.5\nsnoisrevnoC\n15\nskcilC\n1\n10\n0.5\n5\n0 0\n2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2 0 2 5 2025\n1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0,\nSep S e p S e p S e p S e p S e p S e p S e p S e p S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 1 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 2 S e p 3']
+
+--- TABLE 6 ---
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', '', None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', '', None, None, None, None, None, None, None, None, '', '', None, None, None, None, '', '', None, None, None, None, None, None, '', '', None, None, None, None, None, None, None, None, None, None, None, None, '', None, None]
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', None, None, None, None, None, None, None, '', None, None, None, None, None, None, None, None, None, None]
+[None, None, None, None, None, None, None, None, '', '', None, None, None, None, None, None, None, None, '', '', '', '', None, None, '', '', None, None, '', '', None, None, None, None, '', '', None, None, None, None, '', '', '', '', None, None, '', '', '', '', None, None, '', '', None, None, '', None, None]
+[None, None, '', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '', None, None, None, None, None, None, None, None, None, None, None, None, None, None]
+['', '', '', '', None, None, None, None, '', '', None, None, '', '', None, None, None, None, '', '', '', '', None, None, '', '', '', '', '', '', None, None, None, None, '', '', '', '', None, None, '', '', '', '', '', '', '', '', '', '', None, None, '', '', None, None, '', None, None]
+['', '', '', '', '', '', '', '', '', '', None, None, '', '', '', '', None, None, '', '', '', '', None, None, '', '', '', '', '', '', '', '', None, None, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', None, None, '', '', '']
+['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', None, None, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+
+--- TABLE 7 ---
+['']
+['Campaign Clicks ▼ Impressions CTR Avg. CPC Conversions Conv. rate Cost']
+['HCF No Gap Search Campai… 332 6,484 5.12% $2.96 11 3.31% $984']
+['Campaign #1 0 0 0% $0 0 0% $0']
+['']

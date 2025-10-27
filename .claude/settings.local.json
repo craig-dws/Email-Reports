@@ -1,16 +1,19 @@
 {
   "permissions": {
     "allow": [
-      "Bash(claude mcp add:*)",
-      "Bash(npx:*)",
+      "Bash(./venv/Scripts/python.exe test_pdf_extraction.py)",
+      "Bash(./venv/Scripts/python.exe test_kpi_extraction.py:*)",
+      "Bash(./venv/Scripts/python.exe:*)",
+      "Bash(python test:*)",
+      "Bash(python3:*)",
       "Bash(where python)",
       "Bash(py --version)",
+      "Bash(py test_client_database.py)",
+      "Bash(py -m pip install:*)",
       "Bash(py:*)",
-      "Bash(mkdir:*)",
-      "Bash(venvScriptspip install -r requirements.txt)",
-      "Bash(./venv/Scripts/pip install:*)",
-      "Bash(./venv/Scripts/pip list)",
-      "Bash(./venv/Scripts/python -m pip install --upgrade pip)"
+      "Bash(python tests/test_gmail_reader.py)",
+      "Bash(venv/Scripts/python.exe -m unittest:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
