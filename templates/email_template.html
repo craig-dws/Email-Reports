@@ -11,50 +11,50 @@
     <!-- Greeting -->
     <p style="margin-bottom: 15px;">Hi {{ first_name }},</p>
 
-    <!-- Opening -->
+    <!-- Opening Line (different for SEO vs Google Ads) -->
+    {% if report_type == 'Google Ads' %}
+    <p style="margin-bottom: 15px;">Please see attached report for the {{ business_name }} Google Ads Campaign.</p>
+    {% else %}
     <p style="margin-bottom: 15px;">Please see the data below for {{ business_name }}.</p>
-
-    <!-- Personalized Text -->
-    {% if personalized_text %}
-    <p style="margin-bottom: 15px; font-style: italic; color: #555;">
-      {{ personalized_text }}
-    </p>
     {% endif %}
 
-    <!-- Standard Paragraph -->
-    <p style="margin-bottom: 20px;">
-      {{ standard_paragraph }}
-    </p>
+    <!-- Personalized Text from Database -->
+    {% if personalized_text %}
+    {{ personalized_text | safe }}
+    {% endif %}
+
+    <!-- Traffic Type Description -->
+    {% if report_type == 'SEO' %}
+    <p style="margin-bottom: 20px;">The following shows some key KPI data for Organic Search Traffic ONLY. These KPIs will help to track visitor traffic resulting from SEO activities.</p>
+    {% else %}
+    <p style="margin-bottom: 20px;">The following table shows some key KPI data for Google Ads ONLY. These KPIs will help to track visitor traffic resulting from Google Ads activities.</p>
+    {% endif %}
 
     <!-- KPI Table -->
     <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
       <thead>
-        <tr style="background-color: #f4f4f4;">
-          <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold;">Metric</th>
-          <th style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold;">Value</th>
+        <tr style="background-color: #2c3e50;">
+          <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: bold; color: #ffffff;">Metric</th>
+          <th style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold; color: #ffffff;">Value</th>
+          <th style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold; color: #ffffff;">Change</th>
         </tr>
       </thead>
       <tbody>
-        {% for kpi_name, kpi_value in kpis.items() %}
+        {% for kpi in kpis %}
         <tr {% if loop.index is odd %}style="background-color: #f9f9f9;"{% endif %}>
-          <td style="border: 1px solid #ddd; padding: 10px;">{{ kpi_name }}</td>
-          <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">{{ kpi_value }}</td>
+          <td style="border: 1px solid #ddd; padding: 10px;">{{ kpi.name }}</td>
+          <td style="border: 1px solid #ddd; padding: 10px; text-align: right; color: #333333;">{{ kpi.value }}</td>
+          <td style="border: 1px solid #ddd; padding: 10px; text-align: right; color: {{ kpi.color }}; font-weight: bold;">{{ kpi.change }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
-    <!-- Standard Closing Paragraph -->
-    <p style="margin-bottom: 20px;">
-      {{ closing_paragraph }}
-    </p>
+    <!-- Closing Offer -->
+    <p style="margin-bottom: 20px;">Either myself or Mitch would be happy to take you through the reports via Phone or Zoom session if you would like. Please let us know, and this can be arranged.</p>
 
     <!-- Signature -->
-    <p style="margin-bottom: 5px;">Best regards,</p>
-    <p style="margin-bottom: 5px; font-weight: bold;">{{ agency_name }}</p>
-    <p style="margin-bottom: 0; font-size: 13px; color: #666;">
-      {{ agency_email }} | {{ agency_phone }}{% if agency_website %} | {{ agency_website }}{% endif %}
-    </p>
+    <p style="margin-bottom: 5px;">Thanks,</p>
 
   </div>
 </body>

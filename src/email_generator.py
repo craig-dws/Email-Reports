@@ -100,14 +100,10 @@ class EmailGenerator:
                 'subject_line': subject,
                 'first_name': first_name,
                 'business_name': client_name,
+                'report_type': report_type,  # 'SEO' or 'Google Ads'
                 # Mark personalized_intro as safe HTML (it contains <p> tags from CSV)
                 'personalized_text': Markup(personalized_intro) if personalized_intro else '',
-                'standard_paragraph': standard_paragraph,
                 'kpis': formatted_kpis,
-                'closing_paragraph': self.config.get(
-                    'STANDARD_CLOSING_PARAGRAPH',
-                    'Please review the attached PDF for your complete monthly report.'
-                ),
                 'agency_name': self.config.get('AGENCY_NAME', ''),
                 'agency_email': self.config.get('AGENCY_EMAIL', ''),
                 'agency_phone': self.config.get('AGENCY_PHONE', ''),
@@ -170,31 +166,86 @@ class EmailGenerator:
 
         return contact_name
 
-    def _format_kpis(self, kpis: Dict, report_type: str) -> Dict[str, str]:
+    def _format_kpis(self, kpis: Dict, report_type: str) -> list:
         """
-        Format KPI values for display in email.
+        Format KPI values for display in email with color coding based on change.
 
         Args:
-            kpis: Dictionary of KPI name -> value (may be dict with 'value' key or string)
+            kpis: Dictionary of KPI name -> data dict with 'value' and 'change' keys
             report_type: 'SEO' or 'Google Ads'
 
         Returns:
-            Dictionary of formatted KPI name -> formatted value
+            List of dicts with 'name', 'value', 'color' keys
         """
-        formatted = {}
+        formatted = []
 
         for kpi_name, kpi_data in kpis.items():
-            # Extract value (may be string or dict with 'value' key)
+            # Extract value and change
             if isinstance(kpi_data, dict):
                 value = kpi_data.get('value', '')
+                change = kpi_data.get('change', '')
             else:
                 value = kpi_data
+                change = ''
 
-            # Format based on KPI type
+            # Format value
             formatted_value = self._format_kpi_value(kpi_name, value)
-            formatted[kpi_name] = formatted_value
+
+            # Format change (keep as-is, just ensure it has % sign)
+            formatted_change = str(change) if change else 'N/A'
+            if formatted_change != 'N/A' and '%' not in formatted_change:
+                formatted_change = f"{formatted_change}%"
+
+            # Determine color based on change percentage
+            color = self._get_kpi_color(kpi_name, change)
+
+            formatted.append({
+                'name': kpi_name,
+                'value': formatted_value,
+                'change': formatted_change,
+                'color': color
+            })
 
         return formatted
+
+    def _get_kpi_color(self, kpi_name: str, change: str) -> str:
+        """
+        Determine the color for a KPI value based on its change percentage.
+
+        Args:
+            kpi_name: Name of the KPI
+            change: Change percentage (e.g., '11.8%', '-5.2%')
+
+        Returns:
+            Color code: '#27ae60' (green), '#e74c3c' (red), or '#333333' (black)
+        """
+        if not change or change == 'N/A':
+            return '#333333'  # Black for no change data
+
+        # Parse change percentage
+        try:
+            # Remove % sign and convert to float
+            change_str = str(change).replace('%', '').strip()
+            change_value = float(change_str)
+        except (ValueError, AttributeError):
+            return '#333333'  # Black if can't parse
+
+        # For Bounce Rate, inverse the color logic (lower is better)
+        if 'bounce' in kpi_name.lower():
+            if change_value < 0:
+                return '#27ae60'  # Green for decrease
+            elif change_value > 0:
+                return '#e74c3c'  # Red for increase
+            else:
+                return '#333333'  # Black for no change
+        else:
+            # For all other metrics, higher is better
+            if change_value > 0:
+                return '#27ae60'  # Green for increase
+            elif change_value < 0:
+                return '#e74c3c'  # Red for decrease
+            else:
+                return '#333333'  # Black for no change
 
     def _format_kpi_value(self, kpi_name: str, value: str) -> str:
         """
@@ -238,40 +289,49 @@ class EmailGenerator:
 
         return value
 
-    def _generate_text_body(self, context: Dict, formatted_kpis: Dict) -> str:
+    def _generate_text_body(self, context: Dict, formatted_kpis: list) -> str:
         """
         Generate plain text version of email.
 
         Args:
             context: Template context
-            formatted_kpis: Formatted KPI dictionary
+            formatted_kpis: List of formatted KPI dicts
 
         Returns:
             Plain text email body
         """
         text = f"Hi {context['first_name']},\n\n"
-        text += f"Please see the data below for {context['business_name']}.\n\n"
+
+        # Opening line (different for SEO vs Google Ads)
+        report_type = context.get('report_type', 'SEO')
+        if report_type == 'Google Ads':
+            text += f"Please see attached report for the {context['business_name']} Google Ads Campaign.\n\n"
+        else:
+            text += f"Please see the data below for {context['business_name']}.\n\n"
 
         # Convert HTML personalized text to plain text
         if context.get('personalized_text'):
             personalized_plain = self._html_to_text(str(context['personalized_text']))
             text += f"{personalized_plain}\n\n"
 
-        text += f"{context['standard_paragraph']}\n\n"
+        # Traffic type description
+        if report_type == 'SEO':
+            text += "The following shows some key KPI data for Organic Search Traffic ONLY. These KPIs will help to track visitor traffic resulting from SEO activities.\n\n"
+        else:
+            text += "The following table shows some key KPI data for Google Ads ONLY. These KPIs will help to track visitor traffic resulting from Google Ads activities.\n\n"
 
         text += "KEY METRICS:\n"
-        text += "-" * 40 + "\n"
-        for kpi_name, kpi_value in formatted_kpis.items():
-            text += f"{kpi_name}: {kpi_value}\n"
-        text += "-" * 40 + "\n\n"
+        text += "-" * 60 + "\n"
+        # Header row
+        text += f"{'Metric':<30} {'Value':>12} {'Change':>12}\n"
+        text += "-" * 60 + "\n"
+        for kpi in formatted_kpis:
+            text += f"{kpi['name']:<30} {kpi['value']:>12} {kpi['change']:>12}\n"
+        text += "-" * 60 + "\n\n"
 
-        text += f"{context['closing_paragraph']}\n\n"
+        text += "Either myself or Mitch would be happy to take you through the reports via Phone or Zoom session if you would like. Please let us know, and this can be arranged.\n\n"
 
-        text += "Best regards,\n"
-        text += f"{context['agency_name']}\n"
-        text += f"{context['agency_email']} | {context['agency_phone']}\n"
-        if context.get('agency_website'):
-            text += f"{context['agency_website']}\n"
+        text += "Thanks,\n"
 
         return text
 
