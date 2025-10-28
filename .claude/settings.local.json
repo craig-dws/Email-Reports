@@ -1,9 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python:*)",
-      "Bash(copy clients.csv clients_backup.csv)",
-      "Bash(cp:*)"
+      "Bash(py -c \"\nimport ast\nimport re\n\nwith open(''test_approval_tracker.py'', ''r'') as f:\n    content = f.read()\n    \n# Count test methods\ntest_methods = re.findall(r''def (test_\\w+)'', content)\nprint(f''Total test methods: {len(test_methods)}'')\nprint(f''\\nTest methods:'')\nfor i, method in enumerate(test_methods, 1):\n    print(f''{i:2}. {method}'')\n\")"
     ],
     "deny": [],
     "ask": []
